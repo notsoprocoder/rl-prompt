@@ -1,18 +1,20 @@
 from abc import ABCMeta, abstractmethod
 
-from gym import spaces
+import numpy as np
+from gymnasium import spaces
 from transformers import pipeline
 from transformers.pipelines.text2text_generation import Text2TextGenerationPipeline
 
+from rl_prompt_injection.engines.basic_config import ToxicityEngineConstants
 
 class ActionEngine(metaclass=ABCMeta):
-    @property
-    @abstractmethod
-    def action_space(self):
-        pass
+    # @property
+    # @abstractmethod
+    # def action_space(self):
+    #     pass
 
     @abstractmethod
-    def encode_action(self, action: int) -> str:
+    def decode_action(self, action: int) -> str:
         pass
 
 
@@ -21,13 +23,10 @@ class Text2TextActionSpace(ActionEngine):
         self,
         model: str | Text2TextGenerationPipeline,
         num_actions: int = 1000,
-        *args,
-        **kwargs
     ):
-        super(Text2TextActionSpace, self).__init__()
         if isinstance(model, str):
             vocab_dict = pipeline(
-                "text2text-generation", model="google/flan-t5-base"
+                "text2text-generation", model=model
             ).tokenizer.get_vocab()
         else:
             vocab_dict = model.tokenizer.get_vocab()

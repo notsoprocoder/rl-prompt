@@ -2,8 +2,10 @@ from abc import ABCMeta, abstractmethod
 
 import torch
 import numpy as np
-from gym import spaces
+from gymnasium import spaces
 from sentence_transformers import SentenceTransformer
+
+from rl_prompt_injection.engines.basic_config import ToxicityEngineConstants
 
 
 class StateEngine(metaclass=ABCMeta):
@@ -11,17 +13,17 @@ class StateEngine(metaclass=ABCMeta):
     def encode_state(self, s: str) -> torch.Tensor:
         pass
 
-    @property
-    @abstractmethod
-    def observation_space(self):
-        pass
+    # @property
+    # @abstractmethod
+    # def observation_space(self):
+    #     pass
 
 
 class SentenceTransformerStateEngine(StateEngine):
     def __init__(
         self,
         embedding_model: str
-        | SentenceTransformer = "sentence-transformers/all-MiniLM-L12-v2",
+        | SentenceTransformer = ToxicityEngineConstants.STATE_EMBEDDING_MODEL,
     ):
         if isinstance(embedding_model, str):
             self.model: SentenceTransformer = SentenceTransformer(embedding_model)
@@ -36,7 +38,7 @@ class SentenceTransformerStateEngine(StateEngine):
         )
 
     def encode_state(self, s: str) -> torch.Tensor:
-        return torch.Tensor(self.model.encode(s))
+        return self.model.encode(s)
 
     @staticmethod
     def get_embedding_dims(model: SentenceTransformer) -> int:
