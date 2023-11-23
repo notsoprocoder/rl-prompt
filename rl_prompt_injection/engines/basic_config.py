@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 
+
 @dataclass
 class ToxicityEngineConstants:
     STATE_EMBEDDING_MODEL: str = "sentence-transformers/all-MiniLM-L12-v2"

@@ -7,6 +7,7 @@ from transformers.pipelines.text2text_generation import Text2TextGenerationPipel
 
 from rl_prompt_injection.engines.basic_config import ToxicityEngineConstants
 
+
 class ActionEngine(metaclass=ABCMeta):
     # @property
     # @abstractmethod

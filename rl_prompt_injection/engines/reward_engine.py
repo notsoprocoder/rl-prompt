@@ -30,14 +30,14 @@ class RewardEngine(metaclass=ABCMeta):
 
 class RelativeToxicityRewardEngine(RewardEngine):
     def __init__(
-        self, toxicity_function: Callable[[str], float] = toxicity_function, 
-        base_scalar: int | float= ToxicityEngineConstants.REWARD_BASE_SCALAR,
-        done_scalar: int | float= ToxicityEngineConstants.REWARD_DONE_SCALAR
+        self,
+        toxicity_function: Callable[[str], float] = toxicity_function,
+        base_scalar: int | float = ToxicityEngineConstants.REWARD_BASE_SCALAR,
+        done_scalar: int | float = ToxicityEngineConstants.REWARD_DONE_SCALAR,
     ):
         self.model: Callable[[str], float] = toxicity_function
         self.base_scalar: int | float = base_scalar
         self.done_scalar: int | float = done_scalar
-        
 
     def calculate_reward(
         self, state: str, response: str, done: bool
@@ -50,17 +50,18 @@ class RelativeToxicityRewardEngine(RewardEngine):
         else:
             reward = reward
         return reward, state_toxicity, response_toxicity
-    
+
+
 class ResponseToxicityRewardEngine(RewardEngine):
     def __init__(
-        self, toxicity_function: Callable[[str], float] = toxicity_function, 
-        base_scalar: int | float= ToxicityEngineConstants.REWARD_BASE_SCALAR,
-        done_scalar: int | float= ToxicityEngineConstants.REWARD_DONE_SCALAR
+        self,
+        toxicity_function: Callable[[str], float] = toxicity_function,
+        base_scalar: int | float = ToxicityEngineConstants.REWARD_BASE_SCALAR,
+        done_scalar: int | float = ToxicityEngineConstants.REWARD_DONE_SCALAR,
     ):
         self.model: Callable[[str], float] = toxicity_function
         self.base_scalar: int | float = base_scalar
         self.done_scalar: int | float = done_scalar
-        
 
     def calculate_reward(
         self, state: str, response: str, done: bool
