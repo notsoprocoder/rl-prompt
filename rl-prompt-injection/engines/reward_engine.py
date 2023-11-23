@@ -34,11 +34,13 @@ class RelativeToxicityRewardEngine(RewardEngine):
         self.terminal_scalar: int = terminal_scalar
 
     def calculate_reward(
-        state: str, state_toxicity: str, response: str, action: str, terminal: bool
-    ) -> float:
+        state: str, response: str, action: str, terminal: bool
+    ) -> tuple[float, float, float]:
+        state_toxicity = self.model(state)
         response_toxicity = self.model(response)
         reward = response_toxicity - state_toxicity
         if terminal:
-            return self.terminal_scalar * reward
+            reward = self.terminal_scalar * reward
         else:
-            return reward
+            reward = reward
+        return reward, response_toxicity, state_toxicity
