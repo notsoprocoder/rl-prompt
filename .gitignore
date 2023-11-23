@@ -5,6 +5,7 @@ __pycache__/
 *.csv
 # C extensions
 *.so
+.DS_store
 
 # Distribution / packaging
 .Python
