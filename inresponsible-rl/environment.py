@@ -18,6 +18,9 @@ class ToxicityEnvironment(object):
         self.state_engine = state_engine
         self.action_engine = action_engine
 
+        self.obs_space = self.state_engine.observation_space
+        self.action_space = self.state_engine.observation_space
+
     def setup(self):
         self.state: str = np.random.choice(self.texts)
         self.encoded_state = self.state_engine.encode_state(self.state)

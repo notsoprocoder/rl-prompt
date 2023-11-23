@@ -28,17 +28,17 @@ class RewardEngine(metaclass=ABCMeta):
 
 class RelativeToxicityRewardEngine(RewardEngine):
     def __init__(
-        self, sentiment_function: Callable[[str], float], terminal_scalar: int
+        self, toxicity_function: Callable[[str], float], terminal_scalar: int = 5
     ):
-        self.model: Callable[[str], float] = sentiment_function
+        self.model: Callable[[str], float] = toxicity_function
         self.terminal_scalar: int = terminal_scalar
 
     def calculate_reward(
-        state: str, state_sentiment: str, response: str, action: str, terminal: bool
+        state: str, state_toxicity: str, response: str, action: str, terminal: bool
     ) -> float:
         response_toxicity = self.model(response)
-        reward = response_toxicity - state_sentiment
+        reward = response_toxicity - state_toxicity
         if terminal:
             return self.terminal_scalar * reward
         else:
-            return self.terminal_scalar * reward
+            return reward

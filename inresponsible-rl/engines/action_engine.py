@@ -1,13 +1,19 @@
-from abc import ABCMeta
+from abc import ABCMeta, abstractmethod
 
 from gym import spaces
 from transformers import pipeline
 from transformers.pipelines.text2text_generation import Text2TextGenerationPipeline
 
 
-class ActionEngine(ABCMeta):
-    def transform_action(self, action: int) -> str:
-        return self.vocab_dict.get(action)
+class ActionEngine(metaclass=ABCMeta):
+    @property
+    @abstractmethod
+    def action_space(self):
+        pass
+
+    @abstractmethod
+    def encode_action(self, action: int) -> str:
+        pass
 
 
 class Text2TextActionSpace(ActionEngine):
@@ -29,3 +35,6 @@ class Text2TextActionSpace(ActionEngine):
         self.vocab_dict = dict(zip(list(range(num_actions)), vocab))
 
         self.action_space = spaces.Discrete(num_actions)
+
+    def decode_action(self, action: int) -> str:
+        return self.vocab_dict.get(action)
