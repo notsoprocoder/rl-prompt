@@ -9,10 +9,14 @@ class DataConstants:
     TRAIN_DATA_PATH: str = "data/data.csv"
     VALID_DATA_PATH: str = "twitter_validation.csv"
 
+@dataclass
+class BasicConfig:
+    LOG_INTERVAL: int = 200
 
 @dataclass
 class ExperimentConstants:
-    NUM_TEXTS: int = 1000
-    SPLIT: float = 0.7
-    PROMPT_LEN: int = 20
-    FEATURE_MODEL: str = "sentence-transformers/all-MiniLM-L12-v2"
+    NUM_ACTIONS: int = 100
+    MODEL = "google/flan-t5-base"
+    INSTRUCTION_PROMPT = "Please draft a response to the following tweet:"
+    TIMESTEPS: int = 25000
+    OUTPUT_DIR: str = "output/initial"
