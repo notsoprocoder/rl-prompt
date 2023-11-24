@@ -1,6 +1,5 @@
 from abc import ABCMeta, abstractmethod
 
-import torch
 import numpy as np
 from gymnasium import spaces
 from sentence_transformers import SentenceTransformer
@@ -10,7 +9,7 @@ from rl_prompt_injection.engines.basic_config import ToxicityEngineConstants
 
 class StateEngine(metaclass=ABCMeta):
     @abstractmethod
-    def encode_state(self, s: str) -> torch.Tensor:
+    def encode_state(self, s: str) -> np.array:
         pass
 
     # @property
@@ -37,7 +36,7 @@ class SentenceTransformerStateEngine(StateEngine):
             dtype=np.float32,
         )
 
-    def encode_state(self, s: str) -> torch.Tensor:
+    def encode_state(self, s: str) -> np.array:
         return self.model.encode(s)
 
     @staticmethod

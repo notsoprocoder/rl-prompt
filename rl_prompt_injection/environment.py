@@ -5,43 +5,48 @@ import pandas as pd
 import torch
 import gymnasium as gym
 
+from rl_prompt_injection.engines import action_engine, reward_engine, state_engine
+
 
 class ToxicityEnvironment(gym.Env):
     def __init__(
         self,
         llm: Callable[[str], str],
-        reward_engine,
-        state_engine,
-        action_engine,
+        reward_engine: reward_engine.RewardEngine,
+        state_engine: state_engine.StateEngine,
+        action_engine: action_engine.ActionEngine,
         instruction_prompt: str | None,
         texts: np.array,
         experiement_dir: str,
         eps_len: int = 10,
         log: bool = True,
-        log_interval: int = 1000
-
+        log_interval: int = 1000,
     ):
         self.texts: np.array = texts
         self.eps_len: int = eps_len
         self.llm: Callable[[str], str] = llm
-        self.reward_engine = reward_engine
-        self.state_engine = state_engine
-        self.action_engine = action_engine
+        self.reward_engine: reward_engine.RewardEngine = reward_engine
+        self.state_engine: state_engine.StateEngine = state_engine
+        self.action_engine: action_engine.ActionEngine = action_engine
 
-        self.instruction_prompt = (
+        self.instruction_prompt: str = (
             instruction_prompt if instruction_prompt is not None else ""
         )
 
-        self.observation_space = self.state_engine.observation_space
-        self.action_space = self.action_engine.action_space
+        self.observation_space: gym.spaces.Box = self.state_engine.observation_space
+        self.action_space: gym.spaces.Discrete = self.action_engine.action_space
         self.step_counter: int = 0
         self.episode_counter: int = 1
         self.experiment_dir: str = experiement_dir
         self.setup()
         self.setup_log()
-        self.do_logging = log
-        self.log_interval:int = log_interval
-    
+        self.do_logging: bool = log
+        self.log_interval: int = log_interval
+
+        if self.do_logging:
+            if os.path.exists(self.experiment_dir) is False:
+                os.mkdir(self.experiment_dir)
+
     def setup_log(self):
         self._log: list = list()
 
@@ -50,51 +55,49 @@ class ToxicityEnvironment(gym.Env):
         COLS_TO_EXPLODE = [
             "state_toxicity_scores",
             "response_toxicity_scores",
-            "rewards"
+            "rewards",
         ]
         for col in COLS_TO_EXPLODE:
             length = len(df[col].iloc[0])
             for idx in range(length):
                 df[f"{col}_{str(idx)}"] = df[col].apply(lambda l: l[idx])
 
-        df.to_csv(f"{self.experiment_dir}/results_{self.episode_counter}.csv", index=False)
+        df.to_csv(
+            f"{self.experiment_dir}/results_{self.episode_counter}.csv", index=False
+        )
         self.setup_log()
 
     def setup(self):
-        
         self.text_state: str = (
             self.instruction_prompt + " " + np.random.choice(self.texts)
         )
-
-        self.state = self.state_engine.encode_state(self.text_state)
-
+        self.state: np.array = self.state_engine.encode_state(self.text_state)
         self.prompt: str = list()
-
         self.rewards: list() = list()
         self.prev_state_text: str = self.text_state
         self.state_toxicity_scores: list = [self.reward_engine.model(self.text_state)]
         self.responses = list()
         self.response_toxicity_scores: list = list()
         self.actions: list = list()
-        
 
     def _get_obs(self) -> torch.Tensor:
         return self.state
 
     def _get_info(self) -> dict:
         return {
+            "episode_number": self.episode_counter,
             "base_state": self.text_state,
             "prompt": self.prompt,
             "state_toxicity_scores": self.state_toxicity_scores,
             "responses": self.responses,
             "response_toxicity_scores": self.response_toxicity_scores,
-            "state": self.state,
+            "state": self.text_state,
             "rewards": self.rewards,
-            "actions": self.actions
+            "actions": self.actions,
         }
 
-    def reset(self, seed: int = None, options=None) -> tuple[torch.Tensor, dict]:
-        self.step_counter = 0
+    def reset(self, seed: int = None, options=None) -> tuple[np.array, dict]:
+        self.step_counter: int = 0
         self.setup()
         return self._get_obs(), self._get_info()
 
@@ -133,9 +136,9 @@ class ToxicityEnvironment(gym.Env):
             self.episode_counter += 1
             self._log.append(info)
 
-            if self.do_logging and self.episode_counter%self.log_interval == 0:
+            if self.do_logging and self.episode_counter % self.log_interval == 0:
                 self.log()
-            
+
             self.reset()
 
         return self.state, reward, done, False, info

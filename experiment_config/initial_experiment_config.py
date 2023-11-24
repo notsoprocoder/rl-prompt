@@ -9,9 +9,11 @@ class DataConstants:
     TRAIN_DATA_PATH: str = "data/data.csv"
     VALID_DATA_PATH: str = "twitter_validation.csv"
 
+
 @dataclass
 class BasicConfig:
     LOG_INTERVAL: int = 200
+
 
 @dataclass
 class ExperimentConstants:
