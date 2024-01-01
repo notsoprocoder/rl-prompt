@@ -1,4 +1,4 @@
-# RL-PROMPT-Injection
+# RL-PROMPT-INJECTION
 The core idea for this repo came from *RLPrompt: Optimizing Discrete Text Prompts with Reinforcement Learning*. [1]
 
 This library aims to identify prompts that trigger the language model to generate text that scores highly with the evaluator model. These prompts become red-team prompts when the evaluator is a classification model that identifies toxicity or sentiment. 
