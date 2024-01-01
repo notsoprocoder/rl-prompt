@@ -20,5 +20,5 @@ class ExperimentConstants:
     NUM_ACTIONS: int = 250
     MODEL = "google/flan-t5-base"
     INSTRUCTION_PROMPT = ""
-    TIMESTEPS: int = 25000
+    TIMESTEPS: int = 100000
     OUTPUT_DIR: str = "output/no-base-text"
